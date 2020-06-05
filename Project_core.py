@@ -1,6 +1,7 @@
 import openpyxl
 data = openpyxl.load_workbook('data.xlsx')
 Sheet = data.active
+
 print ("Wellcome to your post-quarantine activity manager!")
 while (True):
     print("You can 'add' a new activity, 'edit' an existing activity, 'delete' an activity, 'search' for anything specific or 'exit'")
@@ -11,24 +12,40 @@ while (True):
         print("Closing down")
         break
     elif (ans == "add"):
-        print("What do you want to do after quarantine?")
+        print ("Do you want to create a new category?")
+        print ("Type 'yes' to create a category or 'no' if you dont want to do that")
         ans = str(input())
-        none_count = None
-        flag = False
-        for cell in Sheet['A']:
-            if (cell.value == None):
-                none_count = cell
-            if (cell.value == ans):
-                flag = True
-                break
-        if (flag):
-            print("This activity is already in the database")
+        if (ans == 'yes'):
+            print ("Please type in the name of the category")
+            ans = str(input())
+            Sheet[(chr(len(Sheet['1'])+65)) + '1'] = ans
         else:
-            if (none_count != None):
-                none_count.value = ans
+            print ("Which category do you want to add an activity to?")
+            print ("Here are your possible categories:")
+            for cell in Sheet['1']:
+                print (cell.value)
+            ans = str(input())
+
+            pass
+        
+            print ("What do you want to do after quarantine?")
+            ans = str(input())
+            none_count = None
+            flag = False
+            for cell in Sheet['A']:
+                if (cell.value == None):
+                    none_count = cell
+                if (cell.value == ans):
+                    flag = True
+                    break
+            if (flag):
+                print("This activity is already in the database")
             else:
-                Sheet['A'+ str(len(Sheet['A'])+1)] = ans
-            print("Data saved")
+                if (none_count != None):
+                    none_count.value = ans
+                else:
+                    Sheet['A'+ str(len(Sheet['A'])+1)] = ans
+                print("Data saved")
     elif (ans == "edit"):
         print("Please type in the name of the activity that you want to edit and what you want to change it to (with a space bar in between)")
         ans, n_ans = map(str, input().split())
