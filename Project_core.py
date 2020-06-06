@@ -1,7 +1,12 @@
 import openpyxl
+def search_cell (condition, Sheet):
+    for row in Sheet.iter_rows():
+            for cell in row:
+                if (cell.value == condition):
+                    return (cell)
+    return (None)
 data = openpyxl.load_workbook('data.xlsx')
 Sheet = data.active
-
 print ("Wellcome to your post-quarantine activity manager!")
 while (True):
     print("You can 'add' a new activity, 'edit' an existing activity, 'delete' an activity, 'search' for anything specific or 'exit'")
@@ -17,53 +22,62 @@ while (True):
         ans = str(input())
         if (ans == 'yes'):
             print ("Please type in the name of the category")
+            flag = True
             ans = str(input())
-            Sheet[(chr(len(Sheet['1'])+65)) + '1'] = ans
+            for cell in Sheet['1']:
+                if (cell.value == ans):
+                    flag = False
+                    print ("This category already exists")
+                    break
+            if (flag):
+                Sheet[(chr(len(Sheet['1'])+65)) + '1'] = ans
         else:
             print ("Which category do you want to add an activity to?")
             print ("Here are your possible categories:")
             for cell in Sheet['1']:
                 print (cell.value)
             ans = str(input())
-
-            pass
-        
-            print ("What do you want to do after quarantine?")
-            ans = str(input())
-            none_count = None
-            flag = False
-            for cell in Sheet['A']:
-                if (cell.value == None):
-                    none_count = cell
-                if (cell.value == ans):
-                    flag = True
-                    break
-            if (flag):
-                print("This activity is already in the database")
+            cell0 = search_cell(ans, Sheet)
+            if (cell0 == None):
+                print ("There is no such category")
             else:
-                if (none_count != None):
-                    none_count.value = ans
+                print ("What do you want to do after quarantine?")
+                ans = str(input())
+                none_count = None
+                flag = False
+                for cell in Sheet[chr(cell0.column + 64)]:
+                    if (cell.value == None):
+                        print ("Ding")
+                        if (none_count == None):
+                            none_count = cell
+                    if (cell.value == ans):
+                        flag = True
+                        break
+                if (flag):
+                    print("This activity is already in the database")
                 else:
-                    Sheet['A'+ str(len(Sheet['A'])+1)] = ans
-                print("Data saved")
+                    if (none_count != None):
+                        Sheet[none_count.coordinate] = ans
+                    else:
+                        Sheet[(chr(cell0.column + 64))+ str(len(Sheet[chr(cell0.column + 64)])+1)] = ans
+                    print("Data saved")
     elif (ans == "edit"):
         print("Please type in the name of the activity that you want to edit and what you want to change it to (with a space bar in between)")
         ans, n_ans = map(str, input().split())
-        for row in Sheet.iter_rows():
-            for cell in row:
-                if (cell.value == ans):
-                    cell.value = n_ans
+        cell = search_cell (ans, Sheet)
+        if (cell == None):
+            print ("There is no such activity")
+        else:
+            Sheet[cell.coordinate] = n_ans
     elif (ans == "delete"):
         print("Please type in the name of the activity that you want to delete")
         ans = str(input())
         flag = True
-        for row in Sheet.iter_rows():
-            for cell in row:
-                if (cell.value == ans):
-                    flag = False
-                    cell.value = None
-        if (flag):
-            print("There is no such activity")
+        cell = search_cell (ans, Sheet)
+        if (cell == None):
+            print ("There is no such activity")
+        else:
+            Sheet[cell.coordinate] = None
     elif (ans == "search"):
         print ("Please type in the first few letters of the activity, that you are searching for")
         ans = str(input())
