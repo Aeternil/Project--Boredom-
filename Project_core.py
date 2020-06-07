@@ -47,7 +47,6 @@ while (True):
                 flag = False
                 for cell in Sheet[chr(cell0.column + 64)]:
                     if (cell.value == None):
-                        print ("Ding")
                         if (none_count == None):
                             none_count = cell
                     if (cell.value == ans):
@@ -81,9 +80,11 @@ while (True):
     elif (ans == "search"):
         print ("Please type in the first few letters of the activity, that you are searching for")
         ans = str(input())
+        print ("Here are all activities that look like what you are searching for:")
         for row in Sheet.iter_rows():
-            for cell in row:
-                if (ans in cell.value):
-                    print(cell.value)
+            if (row != Sheet['1']):
+                for cell in row:
+                    if (ans in str(Sheet[cell.coordinate].value)):
+                        print(cell.value)
     else:     
         print("It seems your input was incorrect, please try again")
